@@ -35,7 +35,10 @@ public sealed class OpenSeaChestUtil(IProcessUtil processUtil, IFileUtil fileUti
         return path;
     }
 
-    public async ValueTask<List<string>> Execute(OpenSeaChestTool tool, IReadOnlyList<string> arguments, CancellationToken cancellationToken = default)
+    public ValueTask<List<string>> Execute(OpenSeaChestTool tool, IReadOnlyList<string> arguments, CancellationToken cancellationToken = default)
+        => ExecuteCore(tool, arguments, options.Value.Timeout, cancellationToken);
+
+    private async ValueTask<List<string>> ExecuteCore(OpenSeaChestTool tool, IReadOnlyList<string> arguments, TimeSpan? timeout, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(arguments);
         cancellationToken.ThrowIfCancellationRequested();
@@ -53,7 +56,7 @@ public sealed class OpenSeaChestUtil(IProcessUtil processUtil, IFileUtil fileUti
         }
 
         return await processUtil.Start(executable, workingDirectory: Path.GetDirectoryName(executable), arguments: commandLine,
-            timeout: options.Value.Timeout, log: options.Value.Log, cancellationToken: cancellationToken).ConfigureAwait(false);
+            timeout: timeout, log: options.Value.Log, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     public ValueTask<List<string>> GetVersion(CancellationToken cancellationToken = default) => Execute(OpenSeaChestTool.Basics, ["--version"], cancellationToken);
@@ -64,11 +67,34 @@ public sealed class OpenSeaChestUtil(IProcessUtil processUtil, IFileUtil fileUti
     public ValueTask<List<string>> GetPowerMode(string device, CancellationToken cancellationToken = default) => DeviceCommand(OpenSeaChestTool.PowerControl, device, ["--checkPowerMode"], cancellationToken);
     public ValueTask<List<string>> GetPowerSettings(string device, CancellationToken cancellationToken = default) => DeviceCommand(OpenSeaChestTool.PowerControl, device, ["--showEPCSettings"], cancellationToken);
 
+    public async ValueTask<List<string>> UpgradeFirmware(string device, string firmwarePath, CancellationToken cancellationToken = default)
+    {
+        ValidateDevice(device);
+        if (device.Trim().Equals("all", StringComparison.OrdinalIgnoreCase) || device.IndexOfAny(['*', '?']) >= 0)
+            throw new ArgumentException("Firmware updates require one specific device.", nameof(device));
+        ArgumentException.ThrowIfNullOrWhiteSpace(firmwarePath);
+        cancellationToken.ThrowIfCancellationRequested();
+        string path = Path.GetFullPath(firmwarePath);
+        if (!await fileUtil.Exists(path, cancellationToken).ConfigureAwait(false))
+            throw new FileNotFoundException("The firmware image does not exist.", path);
+        await using (FileStream stream = fileUtil.OpenRead(path))
+        {
+            if (stream.Length == 0)
+                throw new ArgumentException("The firmware image is empty.", nameof(firmwarePath));
+        }
+        return await ExecuteCore(OpenSeaChestTool.Firmware, ["--device", device, "--downloadFW", path, "--downloadMode", "auto"],
+            options.Value.FirmwareTimeout, cancellationToken).ConfigureAwait(false);
+    }
     private ValueTask<List<string>> DeviceCommand(OpenSeaChestTool tool, string device, string[] arguments, CancellationToken cancellationToken)
+    {
+        ValidateDevice(device);
+        return Execute(tool, ["--device", device, .. arguments], cancellationToken);
+    }
+
+    private static void ValidateDevice(string device)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(device);
         if (device.StartsWith('-') || device.IndexOfAny(['\0', '\r', '\n']) >= 0)
             throw new ArgumentException("A device identifier, not a command option, is required.", nameof(device));
-        return Execute(tool, ["--device", device, .. arguments], cancellationToken);
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading;
@@ -34,7 +35,7 @@ public sealed class OpenSeaChestUtilTests : HostedUnitTest
     public async Task BundledExecutableReportsVersion()
     {
         RequireNativeExecution();
-        var output = await _util.GetVersion();
+        List<string> output = await _util.GetVersion();
         if (!output.Any(line => line.Contains("openSeaChest", StringComparison.OrdinalIgnoreCase)))
             throw new InvalidOperationException("Native version output was not captured.");
     }
@@ -43,7 +44,7 @@ public sealed class OpenSeaChestUtilTests : HostedUnitTest
     public async Task BundledSmartToolReportsHelp()
     {
         RequireNativeExecution();
-        var output = await _util.Execute(OpenSeaChestTool.SMART, ["--help"]);
+        List<string> output = await _util.Execute(OpenSeaChestTool.SMART, ["--help"]);
         if (!output.Any(line => line.Contains("smartCheck", StringComparison.Ordinal)))
             throw new InvalidOperationException("SMART help output was not captured.");
     }

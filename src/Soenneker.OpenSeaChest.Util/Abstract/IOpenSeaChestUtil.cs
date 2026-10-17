@@ -39,4 +39,15 @@ public interface IOpenSeaChestUtil
 
     /// <summary>Reads extended power condition settings for the specified device.</summary>
     ValueTask<List<string>> GetPowerSettings(string device, CancellationToken cancellationToken = default);
+    /// <summary>Updates one drive using a local firmware image and openSeaChest's automatic download/activation mode.</summary>
+    /// <param name="device">A specific device handle, such as PD0 or /dev/sg0. The all selector and wildcards are rejected.</param>
+    /// <param name="firmwarePath">Path to a nonempty manufacturer-supplied firmware image matching the drive.</param>
+    /// <param name="cancellationToken">Cancels execution. Cancellation terminates the tool and can interrupt flashing.</param>
+    /// <returns>Native command output, including any activation or power-cycle instructions.</returns>
+    /// <remarks>
+    /// Requires administrator/root permissions. File validation does not establish hardware compatibility.
+    /// Uses FirmwareTimeout (unlimited by default), rather than the ordinary command timeout.
+    /// Firmware changes can affect all namespaces/LUNs on the selected physical drive.
+    /// </remarks>
+    ValueTask<List<string>> UpgradeFirmware(string device, string firmwarePath, CancellationToken cancellationToken = default);
 }

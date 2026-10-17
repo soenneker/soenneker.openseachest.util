@@ -10,6 +10,9 @@ public sealed class OpenSeaChestOptions
     /// <summary>Maximum duration of each command. Defaults to two minutes; null permits an unlimited wait.</summary>
     public TimeSpan? Timeout { get; set; } = TimeSpan.FromMinutes(2);
 
+    /// <summary>Maximum firmware-update duration. Null (the default) avoids interrupting flashing with an automatic timeout.</summary>
+    public TimeSpan? FirmwareTimeout { get; set; }
+
     /// <summary>Whether to log process output. Defaults to false because output can contain device identifiers.</summary>
     public bool Log { get; set; }
 }
