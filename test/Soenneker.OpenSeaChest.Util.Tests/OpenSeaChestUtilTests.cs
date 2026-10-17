@@ -25,10 +25,10 @@ public sealed class OpenSeaChestUtilTests : HostedUnitTest
     }
 
     [Test]
-    public void AllBundledToolsExist()
+    public async Task AllBundledToolsExist()
     {
         foreach (OpenSeaChestTool tool in OpenSeaChestTool.List)
-            _util.GetExecutablePath(tool);
+            await _util.GetExecutablePath(tool);
     }
     [Test]
     public async Task BundledExecutableReportsVersion()

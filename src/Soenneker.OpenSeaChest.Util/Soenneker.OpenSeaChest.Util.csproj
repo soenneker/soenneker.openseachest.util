@@ -46,6 +46,9 @@
 
     <ItemGroup>
         <PackageReference Include="Soenneker.Utils.Process" Version="4.0.1598" />
+        <PackageReference Include="Soenneker.Utils.File" Version="4.0.2319" />
+        <PackageReference Include="Soenneker.Utils.Runtime" Version="4.0.1152" />
+        <PackageReference Include="Soenneker.Utils.PooledStringBuilders" Version="4.0.43" />
         <PackageReference Include="Soenneker.Gen.EnumValues" Version="4.0.64" />
         <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.13" />
         <PackageReference Include="Soenneker.OpenSeaChest.Binaries" Version="4.0.0" />

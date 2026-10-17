@@ -11,7 +11,7 @@ namespace Soenneker.OpenSeaChest.Util.Abstract;
 public interface IOpenSeaChestUtil
 {
     /// <summary>Resolves the executable for the current operating system and process architecture.</summary>
-    string GetExecutablePath(OpenSeaChestTool tool);
+    ValueTask<string> GetExecutablePath(OpenSeaChestTool tool, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Executes a tool with individually escaped arguments, without a shell or automatic elevation.

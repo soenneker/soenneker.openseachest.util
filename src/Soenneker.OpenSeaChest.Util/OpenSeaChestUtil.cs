@@ -8,17 +8,19 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Soenneker.OpenSeaChest.Util.Abstract;
 using Soenneker.Utils.Process.Abstract;
+using Soenneker.Utils.File.Abstract;
+using Soenneker.Utils.Runtime;
 namespace Soenneker.OpenSeaChest.Util;
 
-public sealed class OpenSeaChestUtil(IProcessUtil processUtil, IOptions<OpenSeaChestOptions> options) : IOpenSeaChestUtil
+public sealed class OpenSeaChestUtil(IProcessUtil processUtil, IFileUtil fileUtil, IOptions<OpenSeaChestOptions> options) : IOpenSeaChestUtil
 {
-    public string GetExecutablePath(OpenSeaChestTool tool)
+    public async ValueTask<string> GetExecutablePath(OpenSeaChestTool tool, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(tool);
         // Enum-like values can be constructed by consumers; never treat an arbitrary value as a path.
         if (!OpenSeaChestTool.List.Contains(tool))
             throw new ArgumentOutOfRangeException(nameof(tool));
-        string os = OperatingSystem.IsWindows() ? "win" : OperatingSystem.IsLinux() ? "linux"
+        string os = RuntimeUtil.IsWindows() ? "win" : RuntimeUtil.IsLinux() ? "linux"
             : throw new PlatformNotSupportedException("Bundled openSeaChest tools support Windows and Linux.");
         string architecture = RuntimeInformation.ProcessArchitecture switch
         {
@@ -27,26 +29,31 @@ public sealed class OpenSeaChestUtil(IProcessUtil processUtil, IOptions<OpenSeaC
             _ => throw new PlatformNotSupportedException("Bundled openSeaChest tools support x64 and ARM64.")
         };
         string directory = options.Value.ExecutableDirectory ?? Path.Combine(AppContext.BaseDirectory, "Resources", "OpenSeaChest", $"{os}-{architecture}");
-        string path = Path.GetFullPath(Path.Combine(directory, "openSeaChest_" + tool.Value + (OperatingSystem.IsWindows() ? ".exe" : "")));
-        if (!File.Exists(path))
+        string path = Path.GetFullPath(Path.Combine(directory, "openSeaChest_" + tool.Value + (RuntimeUtil.IsWindows() ? ".exe" : "")));
+        if (!await fileUtil.Exists(path, cancellationToken).ConfigureAwait(false))
             throw new FileNotFoundException("The openSeaChest executable is missing. Install Soenneker.OpenSeaChest.Binaries or configure ExecutableDirectory.", path);
         return path;
     }
 
-    public ValueTask<List<string>> Execute(OpenSeaChestTool tool, IReadOnlyList<string> arguments, CancellationToken cancellationToken = default)
+    public async ValueTask<List<string>> Execute(OpenSeaChestTool tool, IReadOnlyList<string> arguments, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(arguments);
         cancellationToken.ThrowIfCancellationRequested();
         string commandLine = ProcessArguments.Join(arguments);
-        string executable = GetExecutablePath(tool);
-        if (OperatingSystem.IsLinux())
+        string executable = await GetExecutablePath(tool, cancellationToken).ConfigureAwait(false);
+
+        if (RuntimeUtil.IsLinux())
         {
+            // IFileUtil does not expose Unix modes. RuntimeUtil guards these Linux-only calls.
+#pragma warning disable CA1416
             UnixFileMode mode = File.GetUnixFileMode(executable);
             if ((mode & UnixFileMode.UserExecute) == 0)
                 File.SetUnixFileMode(executable, mode | UnixFileMode.UserExecute);
+#pragma warning restore CA1416
         }
-        return processUtil.Start(executable, workingDirectory: Path.GetDirectoryName(executable), arguments: commandLine,
-            timeout: options.Value.Timeout, log: options.Value.Log, cancellationToken: cancellationToken);
+
+        return await processUtil.Start(executable, workingDirectory: Path.GetDirectoryName(executable), arguments: commandLine,
+            timeout: options.Value.Timeout, log: options.Value.Log, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     public ValueTask<List<string>> GetVersion(CancellationToken cancellationToken = default) => Execute(OpenSeaChestTool.Basics, ["--version"], cancellationToken);

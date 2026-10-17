@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
+using Soenneker.Utils.PooledStringBuilders;
 namespace Soenneker.OpenSeaChest.Util;
 
 internal static class ProcessArguments
 {
     internal static string Join(IReadOnlyList<string> arguments)
     {
-        var result = new StringBuilder();
+        using var result = new PooledStringBuilder();
         foreach (string argument in arguments)
         {
             ArgumentNullException.ThrowIfNull(argument);
