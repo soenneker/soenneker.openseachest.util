@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Soenneker.OpenSeaChest.Util.Abstract;
+using Soenneker.OpenSeaChest.Util.Dtos;
 using Soenneker.Utils.Process.Abstract;
 using Soenneker.Utils.File.Abstract;
 using Soenneker.Utils.Runtime;
@@ -59,6 +60,18 @@ public sealed class OpenSeaChestUtil(IProcessUtil processUtil, IFileUtil fileUti
             timeout: timeout, log: options.Value.Log, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
+    public async ValueTask<List<OpenSeaChestDrive>> GetDrives(CancellationToken cancellationToken = default)
+    {
+        List<string> scan = await Scan(cancellationToken).ConfigureAwait(false);
+        var drives = new List<OpenSeaChestDrive>();
+        foreach ((string handle, string? vendor) in DriveOutputParser.ParseScan(scan))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            List<string> info = await DeviceCommand(OpenSeaChestTool.Info, handle, ["--deviceInfo", "--llInfo"], cancellationToken).ConfigureAwait(false);
+            drives.Add(DriveOutputParser.ParseDevice(handle, vendor, info));
+        }
+        return drives;
+    }
     public ValueTask<List<string>> GetVersion(CancellationToken cancellationToken = default) => Execute(OpenSeaChestTool.Basics, ["--version"], cancellationToken);
     public ValueTask<List<string>> Scan(CancellationToken cancellationToken = default) => Execute(OpenSeaChestTool.Basics, ["--scan"], cancellationToken);
     public ValueTask<List<string>> GetDeviceInfo(string device, CancellationToken cancellationToken = default) => DeviceCommand(OpenSeaChestTool.Info, device, ["--deviceInfo"], cancellationToken);

@@ -1,5 +1,6 @@
 using System;
-namespace Soenneker.OpenSeaChest.Util;
+
+namespace Soenneker.OpenSeaChest.Util.Dtos;
 
 /// <summary>Controls native executable lookup and process execution.</summary>
 public sealed class OpenSeaChestOptions

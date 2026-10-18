@@ -51,8 +51,12 @@
         <PackageReference Include="Soenneker.Utils.PooledStringBuilders" Version="4.0.43" />
         <PackageReference Include="Soenneker.Gen.EnumValues" Version="4.0.64" />
         <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.13" />
-        <PackageReference Include="Soenneker.OpenSeaChest.Binaries" Version="4.0.1" />
+        <!-- Propagate the native content files through downstream packages. -->
+        <PackageReference Include="Soenneker.OpenSeaChest.Binaries" Version="4.0.1" PrivateAssets="none" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.13" />
+    </ItemGroup>
+    <ItemGroup>
+        <InternalsVisibleTo Include="Soenneker.OpenSeaChest.Util.Tests" />
     </ItemGroup>
 </Project>
 

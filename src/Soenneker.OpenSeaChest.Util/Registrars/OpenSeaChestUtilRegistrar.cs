@@ -2,6 +2,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Soenneker.OpenSeaChest.Util.Abstract;
+using Soenneker.OpenSeaChest.Util.Dtos;
 using Soenneker.Utils.Process.Registrars;
 using Soenneker.Utils.File.Registrars;
 namespace Soenneker.OpenSeaChest.Util.Registrars;

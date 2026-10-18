@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Soenneker.OpenSeaChest.Util.Dtos;
+
 namespace Soenneker.OpenSeaChest.Util.Abstract;
 
 /// <summary>
@@ -22,6 +24,13 @@ public interface IOpenSeaChestUtil
     /// <summary>Returns the Basics executable's version without accessing a device.</summary>
     ValueTask<List<string>> GetVersion(CancellationToken cancellationToken = default);
 
+    /// <summary>Scans attached devices and reads each device's full identity, firmware, and capacity information.</summary>
+    /// <remarks>
+    /// Returns an empty list only when the scan reports no devices. Unreported fields remain null.
+    /// Access, execution, and unrecognized-output errors propagate; incomplete discovery is not silently returned.
+    /// Requires the permissions needed by native scan and device-information commands.
+    /// </remarks>
+    ValueTask<List<OpenSeaChestDrive>> GetDrives(CancellationToken cancellationToken = default);
     /// <summary>Scans for accessible storage devices.</summary>
     ValueTask<List<string>> Scan(CancellationToken cancellationToken = default);
 
