@@ -40,7 +40,7 @@ public sealed class OpenSeaChestUtil(IProcessUtil processUtil, IFileUtil fileUti
     public ValueTask<List<string>> Execute(OpenSeaChestTool tool, IReadOnlyList<string> arguments, CancellationToken cancellationToken = default)
         => ExecuteCore(tool, arguments, options.Value.Timeout, cancellationToken);
 
-    private async ValueTask<List<string>> ExecuteCore(OpenSeaChestTool tool, IReadOnlyList<string> arguments, TimeSpan? timeout, CancellationToken cancellationToken)
+    private async ValueTask<List<string>> ExecuteCore(OpenSeaChestTool tool, IReadOnlyList<string> arguments, TimeSpan? timeout, CancellationToken cancellationToken, bool firmwareDownload = false)
     {
         ArgumentNullException.ThrowIfNull(arguments);
         cancellationToken.ThrowIfCancellationRequested();
@@ -56,6 +56,9 @@ public sealed class OpenSeaChestUtil(IProcessUtil processUtil, IFileUtil fileUti
                 File.SetUnixFileMode(executable, mode | UnixFileMode.UserExecute);
 #pragma warning restore CA1416
         }
+
+        if (firmwareDownload)
+            return await FirmwareProcess.Run(processUtil, executable, commandLine, timeout, options.Value.Log, cancellationToken).ConfigureAwait(false);
 
         return await processUtil.Start(executable, workingDirectory: Path.GetDirectoryName(executable), arguments: commandLine,
             timeout: timeout, log: options.Value.Log, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -115,7 +118,7 @@ public sealed class OpenSeaChestUtil(IProcessUtil processUtil, IFileUtil fileUti
                 throw new ArgumentException("The firmware image is empty.", nameof(firmwarePath));
         }
         return await ExecuteCore(OpenSeaChestTool.Firmware, ["--device", device, "--downloadFW", path, "--downloadMode", "auto"],
-            options.Value.FirmwareTimeout, cancellationToken).ConfigureAwait(false);
+            options.Value.FirmwareTimeout, cancellationToken, firmwareDownload: true).ConfigureAwait(false);
     }
     private ValueTask<List<string>> DeviceCommand(OpenSeaChestTool tool, string device, string[] arguments, CancellationToken cancellationToken)
     {
