@@ -61,16 +61,34 @@ public sealed class OpenSeaChestUtil(IProcessUtil processUtil, IFileUtil fileUti
             timeout: timeout, log: options.Value.Log, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
-    public async ValueTask<List<OpenSeaChestDrive>> GetDrives(CancellationToken cancellationToken = default)
+    public ValueTask<List<OpenSeaChestDrive>> GetDrives(CancellationToken cancellationToken = default) =>
+        GetDrives(token => Scan(token).AsTask(),
+            (handle, token) => DeviceCommand(OpenSeaChestTool.Info, handle, ["--deviceInfo", "--llInfo"], token).AsTask(), cancellationToken);
+
+    // Native adapter boundary; production and regression tests use the same orchestration/parser.
+    internal async ValueTask<List<OpenSeaChestDrive>> GetDrives(Func<CancellationToken, Task<List<string>>> scan,
+        Func<string, CancellationToken, Task<List<string>>> read, CancellationToken cancellationToken = default)
     {
-        List<string> scan = await Scan(cancellationToken).ConfigureAwait(false);
+        cancellationToken.ThrowIfCancellationRequested();
+        List<string> output = await scan(cancellationToken).ConfigureAwait(false);
         var drives = new List<OpenSeaChestDrive>();
-        foreach ((string handle, string? vendor) in DriveOutputParser.ParseScan(scan))
+        foreach ((string handle, string? vendor) in DriveOutputParser.ParseScan(output))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            List<string> info = await DeviceCommand(OpenSeaChestTool.Info, handle, ["--deviceInfo", "--llInfo"], cancellationToken).ConfigureAwait(false);
-            drives.Add(DriveOutputParser.ParseDevice(handle, vendor, info));
+            try
+            {
+                List<string> info = await read(handle, cancellationToken).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
+                drives.Add(DriveOutputParser.ParseDevice(handle, vendor, info));
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
+            catch (Exception exception)
+            {
+                drives.Add(new OpenSeaChestDrive { Handle = handle, Vendor = vendor,
+                    DiscoveryError = exception, Details = new Dictionary<string, string>(), RawDeviceInfo = [] });
+            }
         }
+        cancellationToken.ThrowIfCancellationRequested();
         return drives;
     }
     public ValueTask<List<string>> GetVersion(CancellationToken cancellationToken = default) => Execute(OpenSeaChestTool.Basics, ["--version"], cancellationToken);

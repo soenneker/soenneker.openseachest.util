@@ -27,9 +27,9 @@ public interface IOpenSeaChestUtil
     /// <summary>Scans attached devices and reads each device's full identity, firmware, and capacity information.</summary>
     /// <remarks>
     /// Returns an empty list only when the scan reports no devices. Unreported fields remain null.
-    /// Access, execution, and unrecognized-output errors propagate; incomplete discovery is not silently returned.
     /// Requires the permissions needed by native scan and device-information commands.
     /// </remarks>
+    /// <remarks>Individual detail failures are returned in OpenSeaChestDrive.DiscoveryError, with only the scan handle/vendor retained. Other devices continue. Scan failures, malformed scan output, and caller cancellation still propagate. Consumers must exclude failed entries from device operations.</remarks>
     ValueTask<List<OpenSeaChestDrive>> GetDrives(CancellationToken cancellationToken = default);
     /// <summary>Scans for accessible storage devices.</summary>
     ValueTask<List<string>> Scan(CancellationToken cancellationToken = default);

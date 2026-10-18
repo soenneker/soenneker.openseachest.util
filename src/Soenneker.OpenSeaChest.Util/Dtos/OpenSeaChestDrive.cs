@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Soenneker.OpenSeaChest.Util.Dtos;
@@ -5,6 +6,8 @@ namespace Soenneker.OpenSeaChest.Util.Dtos;
 /// <summary>A storage device discovered by openSeaChest. Unreported properties remain null.</summary>
 public sealed class OpenSeaChestDrive
 {
+    /// <summary>Failure reading this device's details. Only Handle and scan Vendor are retained when set; never use this entry for firmware operations.</summary>
+    public Exception? DiscoveryError { get; init; }
     /// <summary>The device handle to pass to device operations, including UpgradeFirmware.</summary>
     public required string Handle { get; init; }
     /// <summary>Vendor reported by the device or scan.</summary>

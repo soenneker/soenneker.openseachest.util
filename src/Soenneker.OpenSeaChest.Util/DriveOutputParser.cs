@@ -37,9 +37,8 @@ internal static class DriveOutputParser
             string? vendor = Normalize(line[..8]);
             string remainder = line[8..].TrimStart();
             int end = remainder.IndexOfAny([' ', '\t']);
-            if (end <= 0)
-                throw new InvalidDataException($"Missing device handle in scan row: {line}");
-            string handle = remainder[..end];
+            // Scan may list only a handle for an inaccessible device, including a blank vendor.
+            string handle = end < 0 ? remainder.TrimEnd() : remainder[..end];
             if (!(handle.StartsWith("/dev/", StringComparison.Ordinal) || handle.StartsWith("PD", StringComparison.OrdinalIgnoreCase)
                 || handle.StartsWith("SCSI", StringComparison.OrdinalIgnoreCase) || handle.StartsWith(@"\\.\", StringComparison.Ordinal)))
                 throw new InvalidDataException($"Unrecognized device handle in scan row: {line}");
