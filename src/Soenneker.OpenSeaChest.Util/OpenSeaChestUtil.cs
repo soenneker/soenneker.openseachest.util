@@ -11,9 +11,10 @@ using Soenneker.OpenSeaChest.Util.Dtos;
 using Soenneker.Utils.Process.Abstract;
 using Soenneker.Utils.File.Abstract;
 using Soenneker.Utils.Runtime;
+using Soenneker.Utils.Paths.Resources.Abstract;
 namespace Soenneker.OpenSeaChest.Util;
 
-public sealed class OpenSeaChestUtil(IProcessUtil processUtil, IFileUtil fileUtil, IOptions<OpenSeaChestOptions> options) : IOpenSeaChestUtil
+public sealed class OpenSeaChestUtil(IProcessUtil processUtil, IFileUtil fileUtil, IResourcesPathUtil resourcesPathUtil, IOptions<OpenSeaChestOptions> options) : IOpenSeaChestUtil
 {
     public async ValueTask<string> GetExecutablePath(OpenSeaChestTool tool, CancellationToken cancellationToken = default)
     {
@@ -29,7 +30,7 @@ public sealed class OpenSeaChestUtil(IProcessUtil processUtil, IFileUtil fileUti
             Architecture.Arm64 => "arm64",
             _ => throw new PlatformNotSupportedException("Bundled openSeaChest tools support x64 and ARM64.")
         };
-        string directory = options.Value.ExecutableDirectory ?? Path.Combine(AppContext.BaseDirectory, "Resources", "OpenSeaChest", $"{os}-{architecture}");
+        string directory = options.Value.ExecutableDirectory ?? Path.Combine(await resourcesPathUtil.Get(cancellationToken).ConfigureAwait(false), "OpenSeaChest", $"{os}-{architecture}");
         string path = Path.GetFullPath(Path.Combine(directory, "openSeaChest_" + tool.Value + (RuntimeUtil.IsWindows() ? ".exe" : "")));
         if (!await fileUtil.Exists(path, cancellationToken).ConfigureAwait(false))
             throw new FileNotFoundException("The openSeaChest executable is missing. Install Soenneker.OpenSeaChest.Binaries or configure ExecutableDirectory.", path);
