@@ -45,12 +45,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Soenneker.Utils.Paths.Resources" Version="4.0.297" />
-        <PackageReference Include="Soenneker.Utils.Process" Version="4.0.1598" />
-        <PackageReference Include="Soenneker.Utils.File" Version="4.0.2320" />
-        <PackageReference Include="Soenneker.Utils.Runtime" Version="4.0.1152" />
-        <PackageReference Include="Soenneker.Utils.PooledStringBuilders" Version="4.0.43" />
-        <PackageReference Include="Soenneker.Gen.EnumValues" Version="4.0.64" />
+        <PackageReference Include="Soenneker.Utils.Paths.Resources" Version="11.0.300" />
+        <PackageReference Include="Soenneker.Utils.Process" Version="11.0.1600" />
+        <PackageReference Include="Soenneker.Utils.File" Version="11.0.2325" />
+        <PackageReference Include="Soenneker.Utils.Runtime" Version="11.0.1154" />
+        <PackageReference Include="Soenneker.Utils.PooledStringBuilders" Version="11.0.44" />
+        <PackageReference Include="Soenneker.Gen.EnumValues" Version="11.0.65" />
         <!-- Propagate the native content files through downstream packages. -->
         <PackageReference Include="Soenneker.OpenSeaChest.Binaries" Version="4.0.3" PrivateAssets="none" />
     </ItemGroup>
