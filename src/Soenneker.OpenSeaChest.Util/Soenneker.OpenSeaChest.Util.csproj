@@ -2,7 +2,7 @@
 
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
+        <TargetFramework>net11.0</TargetFramework>
         <IsAotCompatible>true</IsAotCompatible>
         <Nullable>enable</Nullable>
         <Platforms>AnyCPU</Platforms>
@@ -11,7 +11,7 @@
 
     <PropertyGroup>
         <Description>A process-based utility for openSeaChest storage device diagnostics and management.</Description>
-        <Version Condition="'$(BUILD_VERSION)' == ''">4.0.0</Version>
+        <Version Condition="'$(BUILD_VERSION)' == ''">11.0.0</Version>
         <Version Condition="'$(BUILD_VERSION)' != ''">$(BUILD_VERSION)</Version>
         <AssemblyName>Soenneker.OpenSeaChest.Util</AssemblyName>
         <PackageId>Soenneker.OpenSeaChest.Util</PackageId>
@@ -47,14 +47,12 @@
     <ItemGroup>
         <PackageReference Include="Soenneker.Utils.Paths.Resources" Version="4.0.297" />
         <PackageReference Include="Soenneker.Utils.Process" Version="4.0.1598" />
-        <PackageReference Include="Soenneker.Utils.File" Version="4.0.2319" />
+        <PackageReference Include="Soenneker.Utils.File" Version="4.0.2320" />
         <PackageReference Include="Soenneker.Utils.Runtime" Version="4.0.1152" />
         <PackageReference Include="Soenneker.Utils.PooledStringBuilders" Version="4.0.43" />
         <PackageReference Include="Soenneker.Gen.EnumValues" Version="4.0.64" />
-        <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.13" />
         <!-- Propagate the native content files through downstream packages. -->
         <PackageReference Include="Soenneker.OpenSeaChest.Binaries" Version="4.0.3" PrivateAssets="none" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.13" />
     </ItemGroup>
     <ItemGroup>
         <InternalsVisibleTo Include="Soenneker.OpenSeaChest.Util.Tests" />
