@@ -46,9 +46,9 @@
 
     <ItemGroup>
         <PackageReference Include="Soenneker.Utils.Paths.Resources" Version="11.0.300" />
-        <PackageReference Include="Soenneker.Utils.Process" Version="11.0.1600" />
+        <PackageReference Include="Soenneker.Utils.Process" Version="11.0.1601" />
         <PackageReference Include="Soenneker.Utils.File" Version="11.0.2325" />
-        <PackageReference Include="Soenneker.Utils.Runtime" Version="11.0.1154" />
+        <PackageReference Include="Soenneker.Utils.Runtime" Version="11.0.1155" />
         <PackageReference Include="Soenneker.Utils.PooledStringBuilders" Version="11.0.44" />
         <PackageReference Include="Soenneker.Gen.EnumValues" Version="11.0.65" />
         <!-- Propagate the native content files through downstream packages. -->
