@@ -46,7 +46,7 @@
 
     <ItemGroup>
         <PackageReference Include="Soenneker.Utils.Paths.Resources" Version="11.0.300" />
-        <PackageReference Include="Soenneker.Utils.Process" Version="11.0.1601" />
+        <PackageReference Include="Soenneker.Utils.Process" Version="11.0.1602" />
         <PackageReference Include="Soenneker.Utils.File" Version="11.0.2325" />
         <PackageReference Include="Soenneker.Utils.Runtime" Version="11.0.1155" />
         <PackageReference Include="Soenneker.Utils.PooledStringBuilders" Version="11.0.44" />
