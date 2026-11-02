@@ -49,7 +49,7 @@
         <PackageReference Include="Soenneker.Utils.Paths.Resources" Version="11.0.303" />
         <PackageReference Include="Soenneker.Utils.Process" Version="11.0.1604" />
         <PackageReference Include="Soenneker.Utils.File" Version="11.0.2329" />
-        <PackageReference Include="Soenneker.Utils.Runtime" Version="11.0.1157" />
+        <PackageReference Include="Soenneker.Utils.Runtime" Version="11.0.1158" />
         <PackageReference Include="Soenneker.Utils.PooledStringBuilders" Version="11.0.45" />
         <PackageReference Include="Soenneker.Gen.EnumValues" Version="11.0.65" />
         <!-- Propagate the native content files through downstream packages. -->
