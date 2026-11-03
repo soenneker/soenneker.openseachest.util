@@ -46,7 +46,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Soenneker.Utils.Paths.Resources" Version="11.0.308" />
+        <PackageReference Include="Soenneker.Utils.Paths.Resources" Version="11.0.309" />
         <PackageReference Include="Soenneker.Utils.Process" Version="11.0.1608" />
         <PackageReference Include="Soenneker.Utils.File" Version="11.0.2332" />
         <!-- Propagate the native content files through downstream packages. -->
