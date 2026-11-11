@@ -46,8 +46,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Soenneker.Utils.Paths.Resources" Version="11.0.316" />
-        <PackageReference Include="Soenneker.Utils.Process" Version="11.0.1614" />
+        <PackageReference Include="Soenneker.Utils.Paths.Resources" Version="11.0.318" />
+        <PackageReference Include="Soenneker.Utils.Process" Version="11.0.1615" />
         <PackageReference Include="Soenneker.Utils.File" Version="11.0.2342" />
         <!-- Propagate the native content files through downstream packages. -->
         <PackageReference Include="Soenneker.OpenSeaChest.Binaries" Version="4.0.3" PrivateAssets="none" />
